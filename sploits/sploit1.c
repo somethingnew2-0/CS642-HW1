@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include "shellcode.h"
 
-#define TARGET "/tmp/target1"
+#define TARGET "/tmp/target2"
 
 int main(void)
 {
@@ -20,6 +20,7 @@ int main(void)
   args[0] = TARGET; 
   args[1] = buf;
   args[2] = NULL;
+
   env[0] = NULL;
 
   if (0 > execve(TARGET, args, env))

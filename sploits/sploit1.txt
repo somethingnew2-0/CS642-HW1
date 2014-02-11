@@ -1,1 +1,18 @@
 Use this file to explain how your sploit1 works.
+
+This was a basic buffer overflow attack.  The target program allows the user to 
+provide a character pointer that it, in the called function bar(), copies into a
+buffer of size  240.  The bug here is that the target used strcpy(), which doesn't
+check the length of the supllied input but instead keeps copying until it reaches
+a null character. The length of the user-supplied input isn't checked anywhere
+else, either.
+To exploit this we wanted to write 8 bytes past the end of this buffer in order to
+access the EIP/instruction pointer on the stack.  Because of this, in
+our exploit we created a buffer of size 248 and filled all of it with NOPs (0x90)
+except for the end, where we placed the code for launching the shell and, at the 
+very end, a pointer back towards the NOPs in the buffer.  We figured out this
+pointer value by looking at the range of possible addresses for the buffer and 
+choosing an address in the middle, so that the EIP will end up somewhere in the 
+NOP region. Then the program will execute NOPs until it reaches the shell code
+and then execute the shell code, giving us a root shell.
+    
