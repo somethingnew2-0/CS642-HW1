@@ -1,1 +1,24 @@
 Use this file to explain how your sploit2 works.
+
+This was similar to a simple buffer overflow attack, but instead of being able to
+overflow the buffer by an arbitrary amount it only allows overflow by one byte.
+The bug occurs in the for-loop of nstrcpy() because the loop has one too many
+iterations (it goes from 0 to len instead of 0 to len - 1).  Only overflowing by
+this small amount only allows overwriting of the saved frame pointer, but this can 
+be exploited.
+When the nstrcpy() function ends the saved frame pointer becomes the stack pointer
+again as the stack shrinks.  Then, 4 is added to ESP/stack pointer since the frame
+pointer was popped before returning.  Then the program will pop the first word on
+the stack after ESP, thinking that it is EIP/instruction pointer.  This means that
+by altering the frame pointer we can alter the stack pointer and make it pop
+whatever we want into EIP.  One issue that makes it slightly more complicated is
+that we can only modify the least significant byte of the saved frame pointer, but
+this isn't a problem.
+In our exploit, we made a buffer with one more byte than the target was written
+to handle (length 241).  We then filled it with mostly NOPs again, then the 
+shellcode, then the address of the shellcode, then the byte which we wanted to 
+use to overwrite the last byte of the frame pointer (0x70).  We chose this value 
+so that it would point back to the location where the address of the shellcode 
+was stored.  Then, when the program popped the address into the EIP the program 
+would start execution at the location of the shellcode (or somewhere in the 
+preceding NOP region).
