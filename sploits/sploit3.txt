@@ -1,1 +1,21 @@
-Use this file to explain how your sploit3 works.
+The bug in target3 is an integer overflow bug.  The user is expected to provide a string argument that
+includes a count of the number of widgets they want to input and then data representing those widgets.
+When the count is compared to MAX_WIDGETS to determine whether or not the memcpy() occurs, it is 
+compared as an signed integer.  Our count value is multiplied by 20 and then supplied as an argument to 
+memcpy().  This creates an opportunity for integer overflow. This can be exploited to get 
+around the MAX_WIDGETS limit and overflow the buffer. 
+In our exploit, we set up the usual buffer overflow code-- a long series of NOPs, the shellcode, and
+a pointer back into the NOPs region.  However, at the beginning we add our count value as well.  The
+buffer is of size 241*20 (4820), so it will overflow the target buffer enough to overwrite the EIP.  
+The count is the key to this exploit.  We chose to use the value 2147483889.  When the target program 
+parses this number to a signed integer, it looks like a negative number (-2147483407).  Then the count 
+is passed to foo().  Since it is a negative number, it passes the (count < MAX_WIDGETS) test.  However, 
+when it is multiplied by 20 before being used by memcpy(), the leading 1 in the binary representation 
+overflows.  The result is the positive number 4820, which is the length of our buffer and thus the 
+length we want to copy. This will overwrite the EIP with a pointer back into the NOP region of our
+buffer, and then the code for starting up a root shell is executed. 
+
+
+
+
+   
