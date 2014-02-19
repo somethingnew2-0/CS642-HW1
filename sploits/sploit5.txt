@@ -2,10 +2,27 @@ The main bug in this target code is the fact that it allows the user to provide 
 directly to snprintf() and copied into their buffer without checking the content.  Based on the format string that we 
 provide, we can exploit the snprintf() function so that it overwrites the instruction pointer/EIP with the address of our
 NOPs/shellcode on the stack.
+
 The basic idea behind the attack is to use a format string that looks like this:
-<addr of one byte of EIP + 0x01010101> * 4 <stackpop sequence>  <%zx%n> * 4
+<addr of one byte of EIP + 0x01010101> * 4 <stackpop sequence>  <%zx%n> * 4 <NOPs> <shellcode>
+
 We started with the stackpop sequence.  It looks like "%08x%08x".  When snprintf() reaches this sequence, it will look for
 the variables that correspond with the %x on the stack.  However, since there are no variables there, this will just move
 the function's internal pointer down the stack.  The goal is to have this point to the space right above the buffer where 
 our string is printed.
-The next piece of the string uses the %n modifier.
+The next piece of the string uses the %n modifier.  When snprintf() sees a %n, it looks for the next variable on the stack
+and writes to the address is specifies.  It writes the number of bytes that snprintf() has printed so far.  If snprintf()'s 
+internal pointer is pointing to the beginning of our string when it is processing the %n, we can make it write to any address
+that we tell it to by putting that address at the beginning of our string.  
+Since we want to write a very large number in order to produce the address of the EIP, we need to perform four different 
+writes, each time overwriting one byte of the EIP.  We put these four addresses, each corresponding to one byte of the EIP, 
+at the very beginning of our string.  We then use %n four times at the end of our string.  
+Next we had to make sure the EIP was overwritten with the correct values -- values that would make it point to the 
+middle of the NOP region of our buffer.  Since %n writes the number of bytes read in so far, we had to pad this in order
+to get the correct values.  To do this, we put an extra %zx in front of each %n, where z was an integer that increased the
+byte count enough to write the number we wanted.  We calculated these values using the algorithm in Scut's paper.  The only
+other issue with this was that every time the extra %x was processed, snprintf() would look at the next value in the stack.
+Because of this, we added 0x01010101 dummy values in between each of the four addresses so that snprintf() would read the
+dummy values when processing %x and then the desired addresses when processing the %n.  
+We determined the addresses of both the EIP and the middle of our NOP region, and then filled in our format string 
+accordingly.  This resulted in the program running our shellcode and producing a root shell.
