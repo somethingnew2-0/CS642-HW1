@@ -1,1 +1,11 @@
-Use this file to explain how your sploit5 works.
+The main bug in this target code is the fact that it allows the user to provide a string argument that is later passed
+directly to snprintf() and copied into their buffer without checking the content.  Based on the format string that we 
+provide, we can exploit the snprintf() function so that it overwrites the instruction pointer/EIP with the address of our
+NOPs/shellcode on the stack.
+The basic idea behind the attack is to use a format string that looks like this:
+<addr of one byte of EIP + 0x01010101> * 4 <stackpop sequence>  <%zx%n> * 4
+We started with the stackpop sequence.  It looks like "%08x%08x".  When snprintf() reaches this sequence, it will look for
+the variables that correspond with the %x on the stack.  However, since there are no variables there, this will just move
+the function's internal pointer down the stack.  The goal is to have this point to the space right above the buffer where 
+our string is printed.
+The next piece of the string uses the %n modifier.
