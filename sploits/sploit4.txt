@@ -1,1 +1,26 @@
-Use this file to explain how your sploit4 works.
+This exploit uses a double free vulnerability to gain root shell.  The pointer
+in question that is freed twice is q.  Since the input buffer is copied into the p pointer
+location we can write arbitrarily to where the freed q CHUNK was located.  When free is
+called on q again it should normally do nothing.  But with this vulnerability we were able 
+to craft a CHUNK header which located at q will cause free to write 4 bytes anywhere 
+we choose in memory.
+
+To craft this CHUNK we first set the FREEBIT to 1 in the chunk, thereby the free function 
+will continue trying to free this CHUNK.  We craft two other CHUNKS for the left and right
+pointers which are on either side of the q CHUNK.  The right CHUNK is located above in memory,
+and the left CHUNK is located below, opposite to convention.  For this exploit we only really
+care about the left CHUNK which we set the FREEBIT for as well.
+
+At line 117 & 118 of the tmalloc.c we see this code:
+      q->s.r      = p->s.r;
+      p->s.r->s.l = q;
+      
+Although a little confusing, it first copies the right pointer of the crafted chunk to the
+right pointer of the left CHUNK.  It then writes the pointer of the left chunk to the 
+location specified for the left pointer of the right CHUNK.  If we set the left pointer for
+the right chunk to be the EIP we can arbitrarily right the address of the left CHUNK to it.
+That is our exploit.  The only thing left is the garbage written in the right pointer of the
+left CHUNK.  When EIP jumps to the left CHUNK address it needs to jump over that garbage.
+In x86 we used "\xeb\x0c" to jump 12 bytes to the 0x90 nop section of the buffer.  The
+shellcode as per usual was located at the end of the buffer with the nop sled leading to it.
+So once it jumps those bytes the program counter will ride the sled to the shellcode.
