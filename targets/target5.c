@@ -5,9 +5,6 @@
 int foo(char *arg)
 {
   char buf[400];
-  //char* mystring = "%32u%n%220u%n%03u%n%192u%n";
-  //snprintf(buf, sizeof buf, "%32u%n%220u%n%03u%n%192u%n", 1, (void *)(0xbffffe3c), 1, (void *)
-  //	(0xbiffffe3d), 1, (void*)(0xbffffe3e), 1, (void*)(0xbffffe3f) );
   snprintf(buf, sizeof buf, arg);
   return 0;
 }
