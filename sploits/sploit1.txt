@@ -1,9 +1,7 @@
-Use this file to explain how your sploit1 works.
-
 This was a basic buffer overflow attack.  The target program allows the user to 
 provide a character pointer that it, in the called function bar(), copies into a
-buffer of size  240.  The bug here is that the target used strcpy(), which doesn't
-check the length of the supllied input but instead keeps copying until it reaches
+buffer of size 240.  The bug here is that the target used strcpy(), which doesn't
+check the length of the supplied input but instead keeps copying until it reaches
 a null character. The length of the user-supplied input isn't checked anywhere
 else, either.
 To exploit this we wanted to write 8 bytes past the end of this buffer in order to
