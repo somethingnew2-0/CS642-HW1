@@ -1,5 +1,3 @@
-Use this file to explain how your sploit2 works.
-
 This was similar to a simple buffer overflow attack, but instead of being able to
 overflow the buffer by an arbitrary amount it only allows overflow by one byte.
 The bug occurs in the for-loop of nstrcpy() because the loop has one too many
